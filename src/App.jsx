@@ -6,7 +6,9 @@ import UploadSrs from "./pages/upload_srs";
 import UploadSourceCode from "./pages/upload_code";
 import SignUp from "./pages/signup";
 import Login from "./pages/login";
-import ResetPassword from "./pages/ResetPassword"; // Fixed casing
+import ResetPassword from "./pages/ResetPassword";
+import ReportDetail from "./pages/ReportDetail";
+ // Fixed casing
 
 function App() {
   return (
@@ -45,7 +47,8 @@ function App() {
           {/* Auth Pages (No Navbar) */}
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/ResetPassword" element={<ResetPassword />} />
+          <Route path="/ReportDetail" element={<ReportDetail />} />
         </Routes>
       </main>
     </Router>
