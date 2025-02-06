@@ -1,27 +1,51 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import React from 'react';
-import Navbar from './components/Navbar/Navbar';
-import UploadSrs from './pages/upload_srs';
-import UploadSourceCode from './pages/upload_code';
-import SignUp from './pages/signup';  
-import Login from './pages/login';  
-import ResetPassword from './pages/ResetPassword';  
-import Hero from './components/Hero/Hero';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React from "react";
+import Navbar from "./components/Navbar/Navbar";
+import Home from "./pages/Home";
+import UploadSrs from "./pages/upload_srs";
+import UploadSourceCode from "./pages/upload_code";
+import SignUp from "./pages/signup";
+import Login from "./pages/login";
+import ResetPassword from "./pages/ResetPassword"; // Fixed casing
 
 function App() {
   return (
     <Router>
-      <Navbar />
       <main className="overflow-x-hidden bg-white">
         <Routes>
-          {/* Home route */}
-          <Route path="/" element={<Hero />} />
-          <Route path="/upload-srs" element={<UploadSrs />} />
-          <Route path="/upload-code" element={<UploadSourceCode />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<Login/>} />
-          <Route path="/ResetPassword" element={<ResetPassword/>} />
+          {/* Public Routes with Navbar */}
+          <Route 
+            path="/" 
+            element={
+              <>
+                <Navbar />
+                <Home />
+              </>
+            } 
+          />
+          <Route 
+            path="/upload-srs" 
+            element={
+              <>
+                <Navbar />
+                <UploadSrs />
+              </>
+            } 
+          />
+          <Route 
+            path="/upload-code" 
+            element={
+              <>
+                <Navbar />
+                <UploadSourceCode />
+              </>
+            } 
+          />
 
+          {/* Auth Pages (No Navbar) */}
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </main>
     </Router>
