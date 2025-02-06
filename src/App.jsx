@@ -1,15 +1,21 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Navbar from './components/Navbar/Navbar'
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import Navbar from './components/Navbar/Navbar';
+import UploadSrs from './pages/upload_srs';
+import UploadSourceCode from './pages/upload_code';
 function App() {
   return (
-    <main className="overflow-x-hidden bg-white text-primary">
+    <Router>
       <Navbar />
-    </main>
-  )
+      <main className="overflow-x-hidden bg-white">
+        <Routes>
+          <Route path="/" element={<h1>Home Page</h1>} />
+          <Route path="/upload-srs" element={<UploadSrs />} />
+          <Route path="/upload-code" element={<UploadSourceCode />} />
+        </Routes>
+      </main>
+    </Router>
+  );
 }
 
-export default App
+export default App;
