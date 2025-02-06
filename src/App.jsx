@@ -6,6 +6,7 @@ import UploadSourceCode from './pages/upload_code';
 import SignUp from './pages/signup';  
 import Login from './pages/login';  
 import ResetPassword from './pages/ResetPassword';  
+import Hero from './components/Hero/Hero';
 
 function App() {
   return (
@@ -13,7 +14,8 @@ function App() {
       <Navbar />
       <main className="overflow-x-hidden bg-white">
         <Routes>
-          <Route path="/" element={<h1>Home Page</h1>} />
+          {/* Home route */}
+          <Route path="/" element={<Hero />} />
           <Route path="/upload-srs" element={<UploadSrs />} />
           <Route path="/upload-code" element={<UploadSourceCode />} />
           <Route path="/signup" element={<SignUp />} />
