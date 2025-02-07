@@ -8,6 +8,8 @@ import SignUp from "./pages/signup";
 import Login from "./pages/login";
 import ResetPassword from "./pages/ResetPassword";
 import ReportDetail from "./pages/ReportDetail";
+import UserProfile from "./pages/UserProfile";
+
  // Fixed casing
 
 function App() {
@@ -49,6 +51,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/ResetPassword" element={<ResetPassword />} />
           <Route path="/ReportDetail" element={<ReportDetail />} />
+          <Route path="/UserProfile" element={<UserProfile />} />
         </Routes>
       </main>
     </Router>
