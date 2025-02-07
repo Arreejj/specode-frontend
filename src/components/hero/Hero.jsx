@@ -1,5 +1,5 @@
 import React from "react";
-import hero from "C:/specode-frontend-1/src/assets/images/hero.jpg";
+import hero from "../../assets/images/hero.jpg";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { motion } from "framer-motion";
 
