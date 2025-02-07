@@ -9,7 +9,9 @@ import Login from "./pages/login";
 import ResetPassword from "./pages/ResetPassword";
 import ReportDetail from "./pages/ReportDetail";
 import UserProfile from "./pages/UserProfile";
-
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsers from "./pages/AdminUsers";
+import AdminPerformance from "./pages/AdminPerformance";
  // Fixed casing
 
 function App() {
@@ -52,6 +54,10 @@ function App() {
           <Route path="/ResetPassword" element={<ResetPassword />} />
           <Route path="/ReportDetail" element={<ReportDetail />} />
           <Route path="/UserProfile" element={<UserProfile />} />
+          <Route path="/AdminDashboard" element={<AdminDashboard />} />
+          <Route path="/AdminUsers" element={<AdminUsers />} />
+          <Route path="/AdminPerformance" element={<AdminPerformance />} />
+          
         </Routes>
       </main>
     </Router>
