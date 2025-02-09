@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; // For navigation (optional)
 import avatar from "../assets/images/profileavatar.png";
+import Navbar from "../components/Navbar/Navbar";
 
 const UserProfile = () => {
   const [editing, setEditing] = useState(false);
@@ -29,6 +30,8 @@ const UserProfile = () => {
   };
 
   return (
+    <>
+      <Navbar /> 
     <div className="min-h-screen bg-gray-100 p-6">
       {/* Profile Header */}
       <header className="bg-blue-500 text-white text-left text-xl font-semibold py-4 px-6 rounded-lg shadow-md mb-6">
@@ -143,6 +146,7 @@ const UserProfile = () => {
 
      
     </div>
+    </>
   );
 };
 

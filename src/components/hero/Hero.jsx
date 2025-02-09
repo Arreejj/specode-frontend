@@ -46,10 +46,16 @@ const Hero = () => {
             animate="animate"
             className="mt-6"
           >
-            <button className="primary-btn flex items-center gap-2 group">
-              Get Started
-              <IoIosArrowRoundForward className="text-xl transition-transform duration-300 group-hover:translate-x-2 group-hover:-rotate-45" />
-            </button>
+            <button 
+           onClick={() => {
+    
+            navigate('/ResetPassword'); // Navigate to reset password page
+          }}
+            className="primary-btn flex items-center gap-2 group"
+            >
+            Get Started
+            <IoIosArrowRoundForward className="text-xl transition-transform duration-300 group-hover:translate-x-2 group-hover:-rotate-45" />
+           </button>
           </motion.div>
         </div>
 

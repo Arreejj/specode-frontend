@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import uploadIcon from "../assets/images/upload.png";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar/Navbar";
 
 const UploadSrs = () => {
   const navigate = useNavigate();

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; 
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'; 
+import Navbar from "../components/Navbar/Navbar";
+import AdminSidebar from "../components/Navbar/adminsidebar";
 
 const AdminPerformance = () => {
   
@@ -18,15 +20,11 @@ const AdminPerformance = () => {
   ];
 
   return (
+    <>
+      <Navbar /> 
     <div className="min-h-screen flex">
-      {/* Sidebar */}
-      <div className="w-64 bg-gray-800 text-white p-6">
-        <h2 className="text-2xl font-semibold mb-8">Admin Dashboard</h2>
-        <ul>
-          <li><Link to="/AdminUsers" className="hover:text-blue-400">User Management</Link></li>
-          <li><Link to="/AdminPerformance" className="hover:text-blue-400">System Performance</Link></li>
-        </ul>
-      </div>
+       {/* Sidebar */}
+       <AdminSidebar /> 
 
       {/* Main Content */}
       <div className="flex-1 p-6 bg-gray-100">
@@ -68,6 +66,7 @@ const AdminPerformance = () => {
       
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation
 import signup from "../assets/images/signup.png"; // Path to your image
-import { FaUser, FaEnvelope, FaLock, FaGoogle } from 'react-icons/fa'; // Import icons from react-icons
+import Navbar from "../components/Navbar/Navbar";
+import { FaUser, FaEnvelope, FaLock, FaGoogle } from 'react-icons/fa'; // Import icons
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -31,10 +32,7 @@ const SignUp = () => {
   // Form submit handler
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you can perform validation or API calls to submit the form
     console.log('Form Submitted:', { username, email, password });
-    
-    // Redirect to another page after successful sign-up
     navigate('/login');  // Navigate to login page after successful sign-up
   };
 
@@ -48,121 +46,124 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side (Image) */}
-      <div className="w-full md:w-1/2 bg-blue-500 flex justify-center items-center">
-        <img
-          src={signup} // Image source
-          alt="Sign Up"
-          className="w-full h-full object-cover" // Ensure it covers the whole container
-        />
-      </div>
+    <>
+      <Navbar /> 
+      <div className="min-h-screen flex">
+        {/* Left side (Image) */}
+        <div className="w-full md:w-1/2 bg-blue-500 flex justify-center items-center">
+          <img
+            src={signup}
+            alt="Sign Up"
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-      {/* Right side (Form with Blue Background) */}
-      <div className="w-full md:w-1/2 bg-blue-500 flex flex-col justify-center items-center p-6">
-        <h1 className="text-center text-lg font-semibold text-white mb-4">
-          Sign Up
-        </h1>
+        {/* Right side (Form with Blue Background) */}
+        <div className="w-full md:w-1/2 bg-blue-500 flex flex-col justify-center items-center p-6">
+          <h1 className="text-center text-lg font-semibold text-white mb-4">
+            Sign Up
+          </h1>
 
-        {/* Continue with Google Button */}
-        <button className="w-[400px] flex items-center justify-center py-2 px-4 bg-white text-blue-500 font-semibold rounded-2xl shadow-md hover:bg-blue-100 transition duration-200 mb-6">
-          <FaGoogle className="mr-2 text-yellow-500" /> Continue with Google
-        </button>
+          {/* Continue with Google Button */}
+          <button className="w-[400px] flex items-center justify-center py-2 px-4 bg-white text-blue-500 font-semibold rounded-2xl shadow-md hover:bg-blue-100 transition duration-200 mb-6">
+            <FaGoogle className="mr-2 text-yellow-500" /> Continue with Google
+          </button>
 
-        <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md">
-          {/* Username Field */}
-          <div className="relative">
-            <FaUser className="absolute left-3 top-3 text-blue-500" />
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              placeholder="Username"
-              className="mt-1 block w-full pl-10 pr-3 py-2 bg-white text-blue-500 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700 placeholder-blue-500"
-            />
-          </div>
-          
-          {/* Email Field */}
-          <div className="relative">
-            <FaEnvelope className="absolute left-3 top-3 text-blue-500" />
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="Email"
-              className="mt-1 block w-full pl-10 pr-3 py-2 bg-white text-blue-500 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700 placeholder-blue-500"
-            />
-          </div>
-          
-          {/* Password Field */}
-          <div className="relative">
-            <FaLock className="absolute left-3 top-3 text-blue-500" />
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                checkPasswordStrength(e.target.value);
-              }}
-              required
-              placeholder="Password"
-              className="mt-1 block w-full pl-10 pr-3 py-2 bg-white text-blue-500 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700 placeholder-blue-500"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md">
+            {/* Username Field */}
+            <div className="relative">
+              <FaUser className="absolute left-3 top-3 text-blue-500" />
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                placeholder="Username"
+                className="mt-1 block w-full pl-10 pr-3 py-2 bg-white text-blue-500 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700 placeholder-blue-500"
+              />
+            </div>
+            
+            {/* Email Field */}
+            <div className="relative">
+              <FaEnvelope className="absolute left-3 top-3 text-blue-500" />
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="Email"
+                className="mt-1 block w-full pl-10 pr-3 py-2 bg-white text-blue-500 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700 placeholder-blue-500"
+              />
+            </div>
+            
+            {/* Password Field */}
+            <div className="relative">
+              <FaLock className="absolute left-3 top-3 text-blue-500" />
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  checkPasswordStrength(e.target.value);
+                }}
+                required
+                placeholder="Password"
+                className="mt-1 block w-full pl-10 pr-3 py-2 bg-white text-blue-500 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700 placeholder-blue-500"
+              />
+            </div>
 
-          {/* Password Strength Bar */}
-          <div className="w-full h-1 mt-2 rounded-full bg-gray-300">
-            <div
-              className={`h-full rounded-full ${
-                passwordStrength >= 75
-                  ? 'bg-yellow-500'
-                  : passwordStrength >= 50
-                  ? 'bg-yellow-400'
-                  : passwordStrength >= 25
-                  ? 'bg-yellow-300'
-                  : 'bg-gray-300'
-              }`}
-              style={{ width: `${passwordStrength}%` }}
-            ></div>
-          </div>
+            {/* Password Strength Bar */}
+            <div className="w-full h-1 mt-2 rounded-full bg-gray-300">
+              <div
+                className={`h-full rounded-full ${
+                  passwordStrength >= 75
+                    ? 'bg-yellow-500'
+                    : passwordStrength >= 50
+                    ? 'bg-yellow-400'
+                    : passwordStrength >= 25
+                    ? 'bg-yellow-300'
+                    : 'bg-gray-300'
+                }`}
+                style={{ width: `${passwordStrength}%` }}
+              ></div>
+            </div>
+            
+            {/* Password Strength Message */}
+            <div className="mt-2 text-sm text-white">
+              {getPasswordStrengthMessage()}
+            </div>
+            
+            {/* Submit Button */}
+            <div className="flex justify-center mt-6">
+              <button
+                type="submit"
+                className="w-[400px] py-2 px-4 bg-white text-blue-500 font-semibold rounded-2xl shadow-md hover:bg-yellow-500 transition duration-200 mt-6"
+              >
+                Create Account
+              </button>
+            </div>
+          </form>
           
-          {/* Password Strength Message */}
-          <div className="mt-2 text-sm text-white">
-            {getPasswordStrengthMessage()}
+          <div className="mt-4 text-center">
+            <p className="text-sm text-white">
+              Already have an account?{' '}
+              <button
+                onClick={() => navigate('/login')}
+                className="text-white hover:underline"
+              >
+                Login here
+              </button>
+            </p>
           </div>
-          
-          {/* Submit Button */}
-          <div className="flex justify-center mt-6">
-            <button
-              type="submit"
-              className="w-[400px] py-2 px-4 bg-white text-blue-500 font-semibold rounded-2xl shadow-md hover:bg-yellow-500 transition duration-200 mt-6"
-            >
-              Create Account
-            </button>
-          </div>
-        </form>
-        
-        <div className="mt-4 text-center">
-          <p className="text-sm text-white">
-            Already have an account?{' '}
-            <button
-              onClick={() => navigate('/login')}
-              className="text-white hover:underline"
-            >
-              Login here
-            </button>
-          </p>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

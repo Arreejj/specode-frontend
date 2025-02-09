@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation
 import { FaEnvelope } from 'react-icons/fa';
 import signup from "../assets/images/signup.png";
-
+import Navbar from "../components/Navbar/Navbar";
 const ResetPassword = () => {
   const navigate = useNavigate();
 
@@ -20,6 +20,8 @@ const ResetPassword = () => {
   };
 
   return (
+    <>
+      <Navbar /> 
     <div className="min-h-screen flex">
       {/* Left side (Image) */}
       <div className="w-full md:w-1/2 bg-blue-500 flex justify-center items-center">
@@ -76,6 +78,7 @@ const ResetPassword = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -12,6 +12,7 @@ import UserProfile from "./pages/UserProfile";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminPerformance from "./pages/AdminPerformance";
+import AdminSettings from "./pages/AdminSettings";
  // Fixed casing
 
 function App() {
@@ -57,7 +58,8 @@ function App() {
           <Route path="/AdminDashboard" element={<AdminDashboard />} />
           <Route path="/AdminUsers" element={<AdminUsers />} />
           <Route path="/AdminPerformance" element={<AdminPerformance />} />
-          
+           <Route path="/AdminSettings" element={<AdminSettings />}/>
+
         </Routes>
       </main>
     </Router>

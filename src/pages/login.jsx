@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation
 import signup from "../assets/images/signup.png";
+import Navbar from "../components/Navbar/Navbar";
 import { FaEnvelope, FaLock, FaGoogle } from 'react-icons/fa'; // Import icons from react-icons
 
 const Login = () => {
@@ -21,6 +22,8 @@ const Login = () => {
   };
 
   return (
+    <>
+      <Navbar /> 
     <div className="min-h-screen flex">
       {/* Left side (Image) */}
       <div className="w-full md:w-1/2 bg-blue-500 flex justify-center items-center">
@@ -111,6 +114,7 @@ const Login = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

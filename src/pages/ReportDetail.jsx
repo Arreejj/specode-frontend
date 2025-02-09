@@ -1,4 +1,5 @@
 import React from 'react';
+import Navbar from "../components/Navbar/Navbar";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const data = [
@@ -9,6 +10,8 @@ const data = [
 
 const ReportDetail = () => {
   return (
+    <>
+      <Navbar /> 
     <div className="min-h-screen bg-gray-100 p-6">
       {/* Header */}
       <header className="bg-blue-500 text-white text-left text-xl font-semibold py-4 px-6 rounded-lg shadow-md">
@@ -80,6 +83,7 @@ const ReportDetail = () => {
         </table>
       </div>
     </div>
+    </>
   );
 };
 

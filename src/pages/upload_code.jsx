@@ -1,11 +1,13 @@
 import React from "react";
 import uploadIcon from "../assets/images/code.jpg";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar/Navbar";
 
 const UploadSourceCode = () => {
   const navigate = useNavigate();
 
   return (
+    
     <div className="min-h-screen bg-blue-500 flex flex-col items-center justify-center p-4">
       <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
         <h2 className="text-center text-lg font-semibold text-gray-700 mb-4">

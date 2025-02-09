@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; 
+import Navbar from "../components/Navbar/Navbar";
+import AdminSidebar from "../components/Navbar/adminsidebar";
 
 
 const AdminUsers = () => {
@@ -10,15 +12,11 @@ const AdminUsers = () => {
         systemHealth: 95,
       };
  return (
+  <>
+      <Navbar /> 
     <div className="min-h-screen flex">
-      {/* Sidebar */}
-      <div className="w-64 bg-gray-800 text-white p-6">
-        <h2 className="text-2xl font-semibold mb-8">Admin Dashboard</h2>
-        <ul>
-          <li><Link to="/AdminUsers" className="hover:text-blue-400">User Management</Link></li>
-          <li><Link to="/AdminPerformance" className="hover:text-blue-400">System Performance</Link></li>
-        </ul>
-      </div>
+       {/* Sidebar */}
+       <AdminSidebar /> 
 
       {/* Main Content */}
       <div className="flex-1 p-6 bg-gray-100">
@@ -38,8 +36,8 @@ const AdminUsers = () => {
             <tbody>
               {/* Sample Users (this can be dynamic based on actual data) */}
               <tr>
-                <td className="border border-gray-300 px-4 py-2">John Doe</td>
-                <td className="border border-gray-300 px-4 py-2">john@example.com</td>
+                <td className="border border-gray-300 px-4 py-2">John wagih</td>
+                <td className="border border-gray-300 px-4 py-2">john@gmail.com</td>
                 <td className="border border-gray-300 px-4 py-2">Active</td>
                 <td className="border border-gray-300 px-4 py-2">
                   <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">Edit</button>
@@ -47,8 +45,8 @@ const AdminUsers = () => {
                 </td>
               </tr>
               <tr>
-                <td className="border border-gray-300 px-4 py-2">Jane Smith</td>
-                <td className="border border-gray-300 px-4 py-2">jane@example.com</td>
+                <td className="border border-gray-300 px-4 py-2">sarahSmith</td>
+                <td className="border border-gray-300 px-4 py-2">sarah@gmail.com</td>
                 <td className="border border-gray-300 px-4 py-2">Inactive</td>
                 <td className="border border-gray-300 px-4 py-2">
                   <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">Edit</button>
@@ -60,6 +58,7 @@ const AdminUsers = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
