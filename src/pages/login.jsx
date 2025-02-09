@@ -31,16 +31,17 @@ const Login = () => {
         return; // Stops execution if login fails
       }
 
-      console.log(`✅ Login Successful: ${data.user.email}`);
+      console.log(`✅ Login Successful: ${data.user.username}`);
       console.log("🔑 Token:", data.token);
 
-      alert("Login Successful!");
+      // alert("Login Successful!");
 
-      // Save token to local storage
+      // ✅ Store user info in localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       navigate("/"); // Redirect to dashboard
+
     } catch (error) {
       console.error("❌ Network Error:", error);
       setErrorMessage("Network error. Please try again.");

@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
 import hero from "../../assets/images/hero.jpg";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { motion } from "framer-motion";
@@ -22,6 +23,17 @@ export const FadeUp = (delay = 0) => ({
 });
 
 const Hero = () => {
+  const navigate = useNavigate(); // ✅ Initialize navigation
+
+  const handleGetStarted = () => {
+    const user = localStorage.getItem("user"); // ✅ Check if user is logged in
+    if (user) {
+      navigate("/upload-srs"); // ✅ Go to upload page if logged in
+    } else {
+      navigate("/login"); // ✅ Redirect to login if not logged in
+    }
+  };
+
   return (
     <section className="bg-white overflow-hidden relative">
       <div className="container mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 min-h-[650px] items-center">
@@ -39,7 +51,7 @@ const Hero = () => {
             clarity, consistency, and compliance.
           </motion.h1>
 
-          {/* Add margin-top to create space */}
+          {/* Button for Navigation */}
           <motion.div
             variants={FadeUp(0.8)}
             initial="initial"
@@ -47,15 +59,12 @@ const Hero = () => {
             className="mt-6"
           >
             <button 
-           onClick={() => {
-    
-            navigate('/ResetPassword'); // Navigate to reset password page
-          }}
-            className="primary-btn flex items-center gap-2 group"
+              onClick={handleGetStarted} // ✅ Uses the function
+              className="primary-btn flex items-center gap-2 group"
             >
-            Get Started
-            <IoIosArrowRoundForward className="text-xl transition-transform duration-300 group-hover:translate-x-2 group-hover:-rotate-45" />
-           </button>
+              Get Started
+              <IoIosArrowRoundForward className="text-xl transition-transform duration-300 group-hover:translate-x-2 group-hover:-rotate-45" />
+            </button>
           </motion.div>
         </div>
 
