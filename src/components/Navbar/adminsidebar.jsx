@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaHome, FaUsers, FaCog, FaSignOutAlt, FaChartBar } from 'react-icons/fa';
+import { FaHome, FaUsers, FaCog, FaSignOutAlt, FaChartBar, FaFileAlt } from 'react-icons/fa';
 
 const AdminSidebar = () => {
   return (
@@ -38,6 +38,15 @@ const AdminSidebar = () => {
             >
               <FaChartBar />
               <span>System Performance</span>
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/ViewReports" 
+              className="flex items-center space-x-3 px-4 py-2 hover:bg-blue-500 rounded-md transition"
+            >
+              <FaFileAlt />
+              <span>View Reports</span> {/* ✅ Added View Reports */}
             </Link>
           </li>
           <li>

@@ -1,0 +1,54 @@
+filename,requirement,label
+n_gmail_com_1739231354306_SWE09_SRS_PPT2024.pdf,"Security:
+Encrypting all data 
+communications, including 
+CV submissions and 
+validation results, requires 
+the use of industry -standard 
+protocols",Non-Functional
+n_gmail_com_1739231354306_SWE09_SRS_PPT2024.pdf,"Non -Functional 
+Requirements 07
+Performance:
+ResuFit must support 
+at least 100 concurrent 
+applicants without 
+exhibiting a discernible 
+decrease in 
+performance",Non-Functional
+n_gmail_com_1739231354306_SWE09_SRS_PPT2024.pdf,"Reliability:
+ResuFit should be up and 
+running 99",Non-Functional
+n_gmail_com_1739231354306_SWE09_SRS_PPT2024.pdf,"Scalability:
+The database must be 
+designed to grow along 
+with the volume of CVs and 
+assessment data that are 
+gathered",Non-Functional
+n_gmail_com_1739231354306_SWE09_SRS_PPT2024.pdf,"Usability:
+The user interface 
+must be easy to use 
+and give applicants 
+and recruiters clear 
+instructions and help",Non-Functional
+n_gmail_com_1739231354306_SWE09_SRS_PPT2024.pdf,"ResuFit improves the efficiency of 
+the recruitment process, reduces 
+time -to-hire, and enhances the 
+overall candidate experience",Non-Functional
+n_gmail_com_1739231354306_SWE09_SRS_PPT2024.pdf,"Integration:
+ResuFit ought to have the 
+ability to interface with 
+external services, such as 
+ChatGPT, to verify the 
+screening questions
+Maintainability:
+Code should be modular, 
+follow best practices for 
+coding, and have 
+extensive documentation 
+to facilitate maintenance",Non-Functional
+n_gmail_com_1739231354306_SWE09_SRS_PPT2024.pdf,"Compatibility:
+The majority of web 
+browsers, including 
+Edge, Firefox, Safari, and 
+Chrome, ought to work 
+with the system",Non-Functional

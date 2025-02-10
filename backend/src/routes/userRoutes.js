@@ -78,7 +78,8 @@ router.post("/login", async (req, res) => {
     res.status(200).json({
       message: "✅ Login successful",
       token,
-      user: { username: user.username, email: user.email },
+      user: { username: user.username, email: user.email, userType: user.userType },
+      redirectTo: user.userType === "admin" ? "/AdminDashboard" : "/userdashboard",
     });
   } catch (error) {
     console.error("🚨 Login Error:", error);

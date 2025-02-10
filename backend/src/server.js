@@ -169,7 +169,7 @@ app.post("/api/users/signup", async (req, res) => {
   }
 });
 
-// ✅ Login Route
+// ✅ Login Route (Updated)
 app.post("/api/users/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -182,11 +182,25 @@ app.post("/api/users/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
 
-    // ✅ Generate JWT token (Include email)
-    const token = jwt.sign({ id: user.id, email: user.email }, "secretkey", { expiresIn: "3h" });
+    // ✅ Generate JWT token (Include email & userType)
+    const token = jwt.sign(
+      { id: user.id, email: user.email, userType: user.userType }, // 🔥 Added userType
+      "secretkey",
+      { expiresIn: "3h" }
+    );
 
     console.log(`✅ SUCCESS: ${email} logged in`);
-    res.status(200).json({ message: "Login successful", token, user: { username: user.username, email: user.email } });
+    
+    // ✅ Determine redirect path
+    const redirectTo = user.userType === "admin" ? "/AdminDashboard" : "/";
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: { username: user.username, email: user.email, userType: user.userType },
+      redirectTo, // 🔥 Send redirect path
+    });
+
   } catch (error) {
     console.error("🚨 Login Error:", error);
     res.status(500).json({ message: "Server error", error: error.message });

@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import signup from "../assets/images/signup.png";
-import { FaEnvelope, FaLock, FaGoogle } from "react-icons/fa";
+import { FaEnvelope, FaLock } from "react-icons/fa";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // Handle errors
+  const [errorMessage, setErrorMessage] = useState(""); 
+  const [loading, setLoading] = useState(false); // ✅ Loading state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // Clear previous errors
+    setErrorMessage("");
+    setLoading(true); // ✅ Show loading state
 
     console.log("🔍 Sending login request...");
 
@@ -28,38 +30,45 @@ const Login = () => {
       if (!response.ok) {
         console.warn(`⚠️ Login Failed: ${data.message}`);
         setErrorMessage(data.message || "Login failed. Please try again.");
-        return; // Stops execution if login fails
+        setLoading(false); // ✅ Hide loading state
+        return;
       }
 
       console.log(`✅ Login Successful: ${data.user.username}`);
       console.log("🔑 Token:", data.token);
 
-      // alert("Login Successful!");
-
       // ✅ Store user info in localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      navigate("/"); // Redirect to dashboard
+      // ✅ Redirect based on user role
+      navigate(data.redirectTo || "/");
 
     } catch (error) {
       console.error("❌ Network Error:", error);
       setErrorMessage("Network error. Please try again.");
+    } finally {
+      setLoading(false); // ✅ Hide loading state
     }
   };
 
   return (
     <div className="min-h-screen flex">
+      {/* Left Side - Image */}
       <div className="w-full md:w-1/2 bg-blue-500 flex justify-center items-center">
         <img src={signup} alt="Login" className="w-full h-full object-cover" />
       </div>
 
+      {/* Right Side - Login Form */}
       <div className="w-full md:w-1/2 bg-blue-500 flex flex-col justify-center items-center p-6">
         <h2 className="text-center text-lg font-semibold text-white mb-4">Login</h2>
 
+        {/* Error Message */}
         {errorMessage && <p className="text-red-500 bg-white p-2 rounded-md">{errorMessage}</p>}
 
+        {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md">
+          {/* Email Field */}
           <div className="relative">
             <FaEnvelope className="absolute left-3 top-3 text-blue-500" />
             <input
@@ -72,6 +81,7 @@ const Login = () => {
             />
           </div>
 
+          {/* Password Field */}
           <div className="relative">
             <FaLock className="absolute left-3 top-3 text-blue-500" />
             <input
@@ -84,11 +94,22 @@ const Login = () => {
             />
           </div>
 
-          <button type="submit" className="w-full py-2 px-4 bg-white text-blue-500 font-semibold rounded-2xl">
-            Login
+          {/* Login Button */}
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-white text-blue-500 font-semibold rounded-2xl"
+            disabled={loading} // ✅ Disable button while loading
+          >
+            {loading ? "Logging in..." : "Login"}
           </button>
-          <button type="submit" className="w-full py-2 px-4 bg-white text-blue-500 font-semibold rounded-2xl">
-            signup
+
+          {/* Signup Redirect Button */}
+          <button
+            type="button"
+            className="w-full py-2 px-4 bg-gray-200 text-blue-500 font-semibold rounded-2xl"
+            onClick={() => navigate("/signup")} // ✅ Redirect to signup page
+          >
+            Signup
           </button>
         </form>
       </div>
