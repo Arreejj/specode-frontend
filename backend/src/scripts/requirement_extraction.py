@@ -137,6 +137,35 @@ def extract_requirements_from_folder(folder_path):
     return extracted_data
 
 
+def extract_requirements_from_pdf(pdf_path):
+    """Extracts requirements from a single PDF file."""
+    if not os.path.exists(pdf_path):
+        print(f"🚨 Error: PDF file not found at {pdf_path}")
+        return []
+
+    print(f"🔍 Extracting requirements from {pdf_path}...")
+
+    try:
+        text = extract_text_from_pdf(pdf_path)
+        if not text.strip():
+            print(f"⚠️ No text extracted from {pdf_path}")
+            return []
+
+        functional_reqs = extract_functional_requirements(text)
+        non_functional_reqs = extract_non_functional_requirements(text)
+
+        extracted_data = []
+        for req in functional_reqs:
+            extracted_data.append({"filename": os.path.basename(pdf_path), "requirement": req, "label": "Functional"})
+        for req in non_functional_reqs:
+            extracted_data.append({"filename": os.path.basename(pdf_path), "requirement": req, "label": "Non-Functional"})
+
+        print(f"✅ Extracted {len(extracted_data)} requirements from {pdf_path}")
+        return extracted_data
+
+    except Exception as e:
+        print(f"❌ ERROR extracting requirements from {pdf_path}: {e}")
+        return []
 
 # ==============================
 # 6. MAIN EXECUTION FUNCTION

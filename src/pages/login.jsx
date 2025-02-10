@@ -16,7 +16,7 @@ const Login = () => {
     console.log("🔍 Sending login request...");
 
     try {
-      const response = await fetch("http://localhost:3000/api/users/login", {
+      const response = await fetch("http://localhost:5000/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -86,6 +86,9 @@ const Login = () => {
 
           <button type="submit" className="w-full py-2 px-4 bg-white text-blue-500 font-semibold rounded-2xl">
             Login
+          </button>
+          <button type="submit" className="w-full py-2 px-4 bg-white text-blue-500 font-semibold rounded-2xl">
+            signup
           </button>
         </form>
       </div>

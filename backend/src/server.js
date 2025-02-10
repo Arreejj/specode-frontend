@@ -1,109 +1,197 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const { spawn } = require("child_process");
 const fs = require("fs");
+const jwt = require("jsonwebtoken");
+const csv = require("csv-parser");
 
+// ✅ Initialize Express
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true })); 
+// ✅ Middleware
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-    console.log("📂 Created uploads directory");
-}
+// ✅ Connect to MongoDB
+mongoose
+  .connect("mongodb://127.0.0.1:27017/speccode", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Configure Multer for file uploads
+// ✅ Directory Setup
+const uploadDir = path.join(__dirname, "uploads");
+const extractedDir = path.join(__dirname, "extracted");
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+if (!fs.existsSync(extractedDir)) fs.mkdirSync(extractedDir, { recursive: true });
+
+// ✅ AUTH Middleware (Ensure email is in token)
+const authenticateUser = (req, res, next) => {
+  let token = req.header("Authorization");
+
+  if (!token) {
+    console.error("🚫 No token provided!");
+    return res.status(401).json({ error: "Unauthorized access!" });
+  }
+
+  try {
+    if (token.startsWith("Bearer ")) {
+      token = token.slice(7);
+    }
+
+    const decoded = jwt.verify(token, "secretkey");
+
+    console.log("🔍 Decoded Token:", decoded);
+
+    // ✅ Ensure email is in the token
+    if (!decoded.email) {
+      console.error("❌ Email missing in token payload.");
+      return res.status(401).json({ error: "Invalid or expired token. Please log in again." });
+    }
+
+    req.user = decoded;
+    console.log("✅ Authenticated User:", req.user.email);
+    next();
+  } catch (error) {
+    console.error("❌ Invalid token:", error.message);
+    return res.status(401).json({ error: "Invalid or expired token." });
+  }
+};
+
+// ✅ File Upload Configuration (Multer)
 const storage = multer.diskStorage({
-    destination: uploadDir,
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}_${file.originalname}`);
-    },
+  destination: uploadDir,
+  filename: (req, file, cb) => {
+    if (!req.user || !req.user.email) {
+      return cb(new Error("Unauthorized: Missing user email."), false);
+    }
+    const userEmail = req.user.email.replace(/[@.]/g, "_");
+    cb(null, `${userEmail}_${Date.now()}_${file.originalname}`);
+  },
 });
 const upload = multer({ storage });
 
-// Upload and process route
-app.post("/upload", upload.single("file"), (req, res) => {
-    console.log("📥 Received a file upload request...");
+// ✅ Upload & Process File
+app.post("/upload", authenticateUser, upload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file uploaded!" });
 
-    if (!req.file) {
-        console.error("❌ No file received! Check the frontend and request format.");
-        return res.status(400).json({ error: "No file uploaded." });
+  const userEmail = req.user.email.replace(/[@.]/g, "_");
+  const userFolder = path.join(extractedDir, userEmail);
+  if (!fs.existsSync(userFolder)) fs.mkdirSync(userFolder, { recursive: true });
+
+  const extractedFilePath = path.join(userFolder, `${req.file.filename}_extracted.csv`);
+  console.log(`📂 Saving extracted file to: ${extractedFilePath}`);
+
+  const pythonProcess = spawn("python", [
+    path.resolve(__dirname, "./scripts/test_model.py"),
+    "--file",
+    req.file.path,
+    "--output",
+    extractedFilePath,
+  ]);
+
+  let outputData = "";
+  pythonProcess.stdout.on("data", (data) => (outputData += data.toString()));
+  pythonProcess.stderr.on("data", (data) => console.error(`❌ Python Error: ${data.toString()}`));
+
+  pythonProcess.on("close", (code) => {
+    if (code === 0) {
+      console.log(`✅ Extracted CSV saved at: ${extractedFilePath}`);
+      res.json({ success: "File processed successfully!", extractedPath: `/extracted/${userEmail}/latest_extracted.csv` });
+    } else {
+      res.status(500).json({ error: "Failed to process the file. Check logs." });
+    }
+  });
+});
+
+// ✅ Get Latest Extracted CSV
+app.get("/my-extractions/latest", authenticateUser, (req, res) => {
+  try {
+    const userEmail = req.user.email.replace(/[@.]/g, "_");
+    const userFolder = path.join(extractedDir, userEmail);
+
+    if (!fs.existsSync(userFolder)) return res.status(404).json({ error: "No extracted requirements found." });
+
+    const latestFile = fs.readdirSync(userFolder)
+      .filter((file) => file.endsWith("_extracted.csv"))
+      .sort((a, b) => fs.statSync(path.join(userFolder, b)).mtime - fs.statSync(path.join(userFolder, a)).mtime);
+
+    if (latestFile.length === 0) return res.status(404).json({ error: "No extracted requirements found." });
+
+    const latestFilePath = path.join(userFolder, latestFile[0]);
+    console.log(`📂 Sending extracted data from: ${latestFilePath}`);
+
+    const results = [];
+    fs.createReadStream(latestFilePath)
+      .pipe(csv())
+      .on("data", (row) => results.push(row))
+      .on("end", () => res.json(results));
+  } catch (error) {
+    console.error("❌ Error fetching extracted CSV:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+// ✅ User Routes (Signup & Login)
+const bcrypt = require("bcryptjs");
+const User = require("./models/user"); // Ensure the correct model path
+
+// ✅ Signup Route
+app.post("/api/users/signup", async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(400).json({ message: "Email already in use" });
+
+    // Validate password (min 8 chars, 1 uppercase, 1 number)
+    if (!password.match(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@#$%^&*!?.]{8,}$/)) {
+      return res.status(400).json({ message: "Password must be at least 8 characters, contain a number and an uppercase letter." });
     }
 
-    console.log(`✅ File uploaded: ${req.file.path}`);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Call the Python script for processing
-    const pythonProcess = spawn("python", [
-        path.resolve(__dirname, "./scripts/test_model.py"), // Ensure this path is correct
-        "--file",
-        req.file.path,
-    ]);
+    // Create new user
+    const newUser = new User({ username, email, password: hashedPassword });
+    await newUser.save();
 
-    let outputData = "";
-    pythonProcess.stdout.on("data", (data) => {
-        outputData += data.toString();
-    });
-
-    pythonProcess.stderr.on("data", (data) => {
-        console.error(`❌ Python Error: ${data.toString()}`);
-    });
-
-    pythonProcess.on("close", (code) => {
-        if (code === 0) {
-            console.log("✅ Processing complete.");
-            res.json({ success: "File processed successfully!", output: outputData });
-        } else {
-            console.error("❌ Processing failed.");
-            res.status(500).json({ error: "Failed to process the file." });
-        }
-    });
+    res.status(201).json({ message: "User registered successfully!", user: { username, email } });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
-app.post("/upload/code", upload.single("file"), (req, res) => {
-    console.log("📥 Received a ZIP file for code analysis...");
+// ✅ Login Route
+app.post("/api/users/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-    if (!req.file) {
-        console.error("❌ No file received! Check the frontend.");
-        return res.status(400).json({ error: "No file uploaded." });
-    }
+    console.log(`🔍 Checking login for: ${email}`);
 
-    console.log(`✅ ZIP File uploaded: ${req.file.path}`);
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Invalid email or password" });
 
-    // Spawn the Python process for code analysis
-    const pythonProcess = spawn("python", [
-        path.resolve(__dirname, "./scripts/gemini_ast.py"),
-        "--file",
-        req.file.path
-    ]);
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
 
-    let outputData = "";
-    pythonProcess.stdout.on("data", (data) => {
-        outputData += data.toString();
-    });
+    // ✅ Generate JWT token (Include email)
+    const token = jwt.sign({ id: user.id, email: user.email }, "secretkey", { expiresIn: "3h" });
 
-    pythonProcess.stderr.on("data", (data) => {
-        console.error(`❌ Python Error: ${data.toString()}`);
-    });
-
-    pythonProcess.on("close", (code) => {
-        if (code === 0) {
-            console.log("✅ Analysis complete.");
-            res.json({ success: "File processed successfully!", output: outputData });
-        } else {
-            console.error("❌ Analysis failed.");
-            res.status(500).json({ error: "Failed to process the file." });
-        }
-    });
+    console.log(`✅ SUCCESS: ${email} logged in`);
+    res.status(200).json({ message: "Login successful", token, user: { username: user.username, email: user.email } });
+  } catch (error) {
+    console.error("🚨 Login Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+// ✅ Start Server
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

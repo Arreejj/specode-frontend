@@ -4,10 +4,11 @@ import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/Home";
 import UploadSrs from "./pages/upload_srs";
 import UploadSourceCode from "./pages/upload_code";
-import SignUp from "./pages/signup";
+import SignUp from "./pages/SignUp";
 import Login from "./pages/login";
 import ResetPassword from "./pages/ResetPassword";
 import ReportDetail from "./pages/ReportDetail";
+import Extractedreq from "./pages/extractedreq";
 import UserProfile from "./pages/UserProfile";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
@@ -36,6 +37,15 @@ function App() {
               <>
                 <Navbar />
                 <UploadSrs />
+              </>
+            } 
+          />
+          <Route 
+            path="/Extractedreq" 
+            element={
+              <>
+                <Navbar />
+                <Extractedreq />
               </>
             } 
           />
