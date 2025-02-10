@@ -4,10 +4,11 @@ import AdminSidebar from "../components/Navbar/adminsidebar";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true); // Add a loading state
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("http://localhost:3000/api/admin/users") // FIXED API URL
+  // Function to fetch users
+  const fetchUsers = () => {
+    fetch("http://localhost:3000/api/admin/users")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch users");
@@ -15,7 +16,7 @@ const AdminUsers = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Fetched users:", data); // Debugging
+        console.log("Fetched users:", data);
         setUsers(data);
         setLoading(false);
       })
@@ -23,7 +24,34 @@ const AdminUsers = () => {
         console.error("Error fetching users:", error);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
+
+  // Function to delete a user
+  const handleDelete = async (userId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/admin/users/${userId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete user");
+      }
+
+      alert("User deleted successfully!");
+      // Remove the deleted user from the state instead of refetching
+      setUsers(users.filter(user => user._id !== userId));
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      alert("Error deleting user. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -33,11 +61,11 @@ const AdminUsers = () => {
         <div className="flex-1 p-6 bg-gray-100">
           <div className="bg-white p-6 shadow-md rounded-lg">
             <h3 className="font-semibold text-lg mb-4">User Management</h3>
-            
+
             {loading ? (
-              <p>Loading users...</p> // Show loading message
+              <p>Loading users...</p>
             ) : users.length === 0 ? (
-              <p>No users found.</p> // Show message if no users exist
+              <p>No users found.</p>
             ) : (
               <table className="w-full table-auto border-collapse border border-gray-300">
                 <thead>
@@ -54,7 +82,12 @@ const AdminUsers = () => {
                       <td className="border border-gray-300 px-4 py-2">{user.email}</td>
                       <td className="border border-gray-300 px-4 py-2">
                         <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">Edit</button>
-                        <button className="bg-red-500 text-white px-4 py-2 rounded-lg ml-2">Delete</button>
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded-lg ml-2"
+                          onClick={() => handleDelete(user._id)}
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}
