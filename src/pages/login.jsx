@@ -12,10 +12,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
-    setLoading(true); // ✅ Show loading state
-
-    console.log("🔍 Sending login request...");
+    setLoading(true); // ✅ Enable loading state
 
     try {
       const response = await fetch("http://localhost:5000/api/users/login", {
@@ -25,25 +22,24 @@ const Login = () => {
       });
 
       const data = await response.json();
-      console.log("📩 Response received:", data);
 
-      if (!response.ok) {
-        console.warn(`⚠️ Login Failed: ${data.message}`);
-        setErrorMessage(data.message || "Login failed. Please try again.");
-        setLoading(false); // ✅ Hide loading state
-        return;
+      if (response.ok) {
+        // ✅ Store token and userType
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userType", data.user.userType);
+
+        console.log(`✅ Login Successful: ${data.user.username}`);
+        console.log("🔑 Token:", data.token);
+
+        // ✅ Redirect based on user role
+        if (data.user.userType === "admin") {
+          navigate("/adminDashboard");
+        } else {
+          navigate("/");
+        }
+      } else {
+        setErrorMessage(data.message);
       }
-
-      console.log(`✅ Login Successful: ${data.user.username}`);
-      console.log("🔑 Token:", data.token);
-
-      // ✅ Store user info in localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // ✅ Redirect based on user role
-      navigate(data.redirectTo || "/");
-
     } catch (error) {
       console.error("❌ Network Error:", error);
       setErrorMessage("Network error. Please try again.");

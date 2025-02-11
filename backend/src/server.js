@@ -153,20 +153,26 @@ app.post("/api/users/signup", async (req, res) => {
 app.post("/api/users/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
+
     if (!user) return res.status(401).json({ message: "Invalid email or password" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
 
-    const token = jwt.sign({ id: user.id, email: user.email }, "secretkey", { expiresIn: "3h" });
+    // Include userType in JWT token
+    const token = jwt.sign({ id: user.id, email: user.email, userType: user.userType }, "secretkey", { expiresIn: "3h" });
 
-    res.status(200).json({ message: "Login successful", token, user: { username: user.username, email: user.email } });
+    res.status(200).json({ 
+      message: "Login successful", 
+      token, 
+      user: { username: user.username, email: user.email, userType: user.userType } 
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
 
 // ✅ Get User Profile
 app.get("/api/users/profile", authenticateUser, async (req, res) => {

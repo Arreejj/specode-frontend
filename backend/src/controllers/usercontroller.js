@@ -10,24 +10,32 @@ exports.signup = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { username, email, password } = req.body;
+  const { username, email, password, userType } = req.body; // Include userType
 
   try {
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    user = new User({ username, email, password: hashedPassword });
+    user = new User({ 
+      username, 
+      email, 
+      password: hashedPassword, 
+      userType: userType || "user" // Default to "user" if not provided
+    });
+
     await user.save();
 
     const token = jwt.sign({ id: user.id, email }, "secretkey", { expiresIn: "3h" });
 
-    res.status(201).json({ token, message: "Signup successful", user: { username, email } });
+    res.status(201).json({ token, message: "Signup successful", user: { username, email, userType } });
   } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 };
 
+
+// ✅ User Login
 // ✅ User Login
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -39,13 +47,30 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
 
-    const token = jwt.sign({ id: user.id, email }, "secretkey", { expiresIn: "3h" });
+    const token = jwt.sign({ id: user.id, email, userType: user.userType }, "secretkey", { expiresIn: "3h" });
 
-    res.json({ message: "Login successful", token, user: { username: user.username, email } });
+    // Check if user is an admin
+    if (user.userType === "admin") {
+      return res.json({ 
+        message: "Login successful", 
+        token, 
+        redirect: "/admin-dashboard", // Frontend should handle redirection
+        user: { username: user.username, email, userType: user.userType } 
+      });
+    }
+
+    res.json({ 
+      message: "Login successful", 
+      token, 
+      redirect: "/user-dashboard", // Normal users go here
+      user: { username: user.username, email, userType: user.userType } 
+    });
+
   } catch (err) {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 // ✅ Get User Profile
 exports.getProfile = async (req, res) => {
