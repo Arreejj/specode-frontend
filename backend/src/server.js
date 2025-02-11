@@ -7,6 +7,8 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const csv = require("csv-parser");
+const bcrypt = require("bcryptjs");
+const User = require("./models/user");
 
 // ✅ Initialize Express
 const app = express();
@@ -37,7 +39,6 @@ const authenticateUser = (req, res, next) => {
   let token = req.header("Authorization");
 
   if (!token) {
-    console.error("🚫 No token provided!");
     return res.status(401).json({ error: "Unauthorized access!" });
   }
 
@@ -48,19 +49,13 @@ const authenticateUser = (req, res, next) => {
 
     const decoded = jwt.verify(token, "secretkey");
 
-    console.log("🔍 Decoded Token:", decoded);
-
-    // ✅ Ensure email is in the token
     if (!decoded.email) {
-      console.error("❌ Email missing in token payload.");
-      return res.status(401).json({ error: "Invalid or expired token. Please log in again." });
+      return res.status(401).json({ error: "Invalid or expired token." });
     }
 
     req.user = decoded;
-    console.log("✅ Authenticated User:", req.user.email);
     next();
   } catch (error) {
-    console.error("❌ Invalid token:", error.message);
     return res.status(401).json({ error: "Invalid or expired token." });
   }
 };
@@ -103,7 +98,6 @@ app.post("/upload", authenticateUser, upload.single("file"), (req, res) => {
 
   pythonProcess.on("close", (code) => {
     if (code === 0) {
-      console.log(`✅ Extracted CSV saved at: ${extractedFilePath}`);
       res.json({ success: "File processed successfully!", extractedPath: `/extracted/${userEmail}/latest_extracted.csv` });
     } else {
       res.status(500).json({ error: "Failed to process the file. Check logs." });
@@ -126,7 +120,6 @@ app.get("/my-extractions/latest", authenticateUser, (req, res) => {
     if (latestFile.length === 0) return res.status(404).json({ error: "No extracted requirements found." });
 
     const latestFilePath = path.join(userFolder, latestFile[0]);
-    console.log(`📂 Sending extracted data from: ${latestFilePath}`);
 
     const results = [];
     fs.createReadStream(latestFilePath)
@@ -134,32 +127,19 @@ app.get("/my-extractions/latest", authenticateUser, (req, res) => {
       .on("data", (row) => results.push(row))
       .on("end", () => res.json(results));
   } catch (error) {
-    console.error("❌ Error fetching extracted CSV:", error);
     res.status(500).json({ error: "Internal server error." });
   }
 });
 
-// ✅ User Routes (Signup & Login)
-const bcrypt = require("bcryptjs");
-const User = require("./models/user"); // Ensure the correct model path
-
-// ✅ Signup Route
+// ✅ User Signup
 app.post("/api/users/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "Email already in use" });
 
-    // Validate password (min 8 chars, 1 uppercase, 1 number)
-    if (!password.match(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@#$%^&*!?.]{8,}$/)) {
-      return res.status(400).json({ message: "Password must be at least 8 characters, contain a number and an uppercase letter." });
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user
     const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
 
@@ -169,12 +149,10 @@ app.post("/api/users/signup", async (req, res) => {
   }
 });
 
-// ✅ Login Route (Updated)
+// ✅ User Login
 app.post("/api/users/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    console.log(`🔍 Checking login for: ${email}`);
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid email or password" });
@@ -182,27 +160,53 @@ app.post("/api/users/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
 
-    // ✅ Generate JWT token (Include email & userType)
-    const token = jwt.sign(
-      { id: user.id, email: user.email, userType: user.userType }, // 🔥 Added userType
-      "secretkey",
-      { expiresIn: "3h" }
-    );
+    const token = jwt.sign({ id: user.id, email: user.email }, "secretkey", { expiresIn: "3h" });
 
-    console.log(`✅ SUCCESS: ${email} logged in`);
-    
-    // ✅ Determine redirect path
-    const redirectTo = user.userType === "admin" ? "/AdminDashboard" : "/";
-
-    res.status(200).json({
-      message: "Login successful",
-      token,
-      user: { username: user.username, email: user.email, userType: user.userType },
-      redirectTo, // 🔥 Send redirect path
-    });
-
+    res.status(200).json({ message: "Login successful", token, user: { username: user.username, email: user.email } });
   } catch (error) {
-    console.error("🚨 Login Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// ✅ Get User Profile
+app.get("/api/users/profile", authenticateUser, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// ✅ Update User Profile
+app.put("/api/users/profile", authenticateUser, async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    let user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (password && password.length > 0) {
+      user.password = await bcrypt.hash(password, 10);
+    }
+
+    await user.save();
+    res.json({ message: "Profile updated successfully!", user });
+  } catch (error) {
+    console.error("Profile update error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// ✅ Delete User Account
+app.delete("/api/users/profile", authenticateUser, async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.user.id);
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });

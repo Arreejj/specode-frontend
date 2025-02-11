@@ -14,6 +14,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminPerformance from "./pages/AdminPerformance";
 import AdminSettings from "./pages/AdminSettings";
+
  // Fixed casing
 
 function App() {
